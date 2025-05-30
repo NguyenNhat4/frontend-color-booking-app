@@ -29,6 +29,7 @@ class AuthRepository {
     String? firstName,
     String? lastName,
     String? phoneNumber,
+    required String accountType,
   }) async {
     try {
       final response = await _dio.post(
@@ -42,6 +43,7 @@ class AuthRepository {
           'first_name': firstName,
           'last_name': lastName,
           'phone_number': phoneNumber,
+          'account_type': accountType,
         },
       );
       if (response.statusCode == 201) {

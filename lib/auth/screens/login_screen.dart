@@ -5,7 +5,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:mobile/auth/bloc/auth_bloc.dart';
 import 'package:mobile/auth/bloc/auth_event.dart';
 import 'package:mobile/auth/repositories/auth_repository.dart';
-import 'package:mobile/auth/screens/registration_screen.dart';
+import 'package:mobile/auth/screens/account_type_selection_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
@@ -76,7 +76,7 @@ class LoginScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RegistrationScreen(),
+                      builder: (context) => const AccountTypeSelectionScreen(),
                     ),
                   );
                 },

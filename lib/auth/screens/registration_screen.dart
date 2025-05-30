@@ -9,8 +9,9 @@ import 'package:mobile/auth/repositories/auth_repository.dart';
 class RegistrationScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
   final AuthRepository authRepository = AuthRepository();
+  final String accountType;
 
-  RegistrationScreen({super.key});
+  RegistrationScreen({super.key, required this.accountType});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,28 @@ class RegistrationScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                // Display selected account type
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _getAccountTypeIcon(),
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Account Type: ${_getAccountTypeLabel()}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
                 FormBuilderTextField(
                   name: 'email',
                   decoration: const InputDecoration(labelText: 'Email'),
@@ -74,6 +97,7 @@ class RegistrationScreen extends StatelessWidget {
                           email: formData['email'],
                           username: formData['username'],
                           password: formData['password'],
+                          accountType: accountType,
                         );
                         if (result != null && context.mounted) {
                           // Automatically log in user after registration or navigate to login
@@ -86,6 +110,9 @@ class RegistrationScreen extends StatelessWidget {
                             ),
                           );
                           Navigator.pop(context); // Go back to login screen
+                          Navigator.pop(
+                            context,
+                          ); // Go back to account type selection screen
                         } else if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -104,5 +131,31 @@ class RegistrationScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData _getAccountTypeIcon() {
+    switch (accountType) {
+      case 'homeowner':
+        return Icons.home;
+      case 'professional':
+        return Icons.business_center;
+      case 'business':
+        return Icons.store;
+      default:
+        return Icons.person;
+    }
+  }
+
+  String _getAccountTypeLabel() {
+    switch (accountType) {
+      case 'homeowner':
+        return 'Homeowner';
+      case 'professional':
+        return 'Professional';
+      case 'business':
+        return 'Business';
+      default:
+        return accountType;
+    }
   }
 }
