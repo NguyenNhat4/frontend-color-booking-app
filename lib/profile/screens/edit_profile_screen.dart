@@ -94,6 +94,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         initialValue: {
           'first_name': user.firstName ?? '',
           'last_name': user.lastName ?? '',
+          'email': user.email,
           'phone_number': user.phoneNumber ?? '',
           'street_address': user.streetAddress ?? '',
           'city': user.city ?? '',
@@ -137,6 +138,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 16),
+                FormBuilderTextField(
+                  name: 'email',
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.email(),
+                    FormBuilderValidators.maxLength(100),
+                  ]),
                 ),
                 const SizedBox(height: 16),
                 FormBuilderTextField(
@@ -330,8 +346,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _saveProfile(User user) {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final formData = _formKey.currentState!.value;
+      final profileBloc = context.read<ProfileBloc>();
 
-      context.read<ProfileBloc>().add(
+      // Check if email has changed
+      final newEmail = formData['email']?.toString().trim();
+      if (newEmail != null && newEmail != user.email) {
+        // Update email first
+        profileBloc.add(UpdateEmail(newEmail: newEmail));
+      }
+
+      // Update other profile fields
+      profileBloc.add(
         UpdateProfile(
           firstName:
               formData['first_name']?.toString().trim().isEmpty == true
