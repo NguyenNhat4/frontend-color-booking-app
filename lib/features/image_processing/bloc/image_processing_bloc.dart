@@ -187,19 +187,91 @@ class ImageProcessingBloc
     try {
       emit(const ImageProcessingLoading(message: 'Loading demo image...'));
 
-      // For now, we'll simulate loading a demo image
-      // In a real implementation, you'd load from assets
-      emit(
-        const ImageProcessingError(
-          errorMessage: 'Demo images not yet implemented',
-        ),
+      // Create a simple colored demo image
+      final demoImage = await _createDemoImage(event.demoImagePath);
+
+      // Create a new ProcessedImage instance with the demo image
+      final processedImage = ProcessedImage(
+        id: _generateId(),
+        originalImage: demoImage,
+        createdAt: DateTime.now(),
+        status: ProcessingStatus.completed,
       );
+
+      _currentProcessedImage = processedImage;
+      emit(ImageUploadedState(processedImage: processedImage));
     } catch (e) {
       emit(
         ImageProcessingError(
           errorMessage: 'Failed to load demo image: ${e.toString()}',
         ),
       );
+    }
+  }
+
+  Future<File> _createDemoImage(String demoImagePath) async {
+    try {
+      // Create a simple demo image with different colors based on the demo type
+      final width = 400;
+      final height = 300;
+
+      img.Color backgroundColor;
+      img.Color wallColor;
+
+      switch (demoImagePath) {
+        case 'demo_0':
+          backgroundColor = img.ColorRgb8(240, 240, 240); // Light gray
+          wallColor = img.ColorRgb8(255, 255, 255); // White
+          break;
+        case 'demo_1':
+          backgroundColor = img.ColorRgb8(200, 220, 240); // Light blue
+          wallColor = img.ColorRgb8(245, 245, 220); // Beige
+          break;
+        case 'demo_2':
+          backgroundColor = img.ColorRgb8(220, 240, 220); // Light green
+          wallColor = img.ColorRgb8(255, 248, 220); // Cornsilk
+          break;
+        default:
+          backgroundColor = img.ColorRgb8(240, 240, 240);
+          wallColor = img.ColorRgb8(255, 255, 255);
+      }
+
+      // Create a simple room-like image
+      final image = img.Image(width: width, height: height);
+
+      // Fill background
+      img.fill(image, color: backgroundColor);
+
+      // Draw a simple wall (rectangle)
+      img.fillRect(
+        image,
+        x1: 50,
+        y1: 50,
+        x2: width - 50,
+        y2: height - 100,
+        color: wallColor,
+      );
+
+      // Add a simple border to make it look more like a wall
+      img.drawRect(
+        image,
+        x1: 50,
+        y1: 50,
+        x2: width - 50,
+        y2: height - 100,
+        color: img.ColorRgb8(100, 100, 100),
+      );
+
+      // Save the demo image to a temporary file
+      final tempDir = await getTemporaryDirectory();
+      final demoFile = File(
+        '${tempDir.path}/demo_${DateTime.now().millisecondsSinceEpoch}.png',
+      );
+      await demoFile.writeAsBytes(img.encodePng(image));
+
+      return demoFile;
+    } catch (e) {
+      throw Exception('Failed to create demo image: $e');
     }
   }
 
