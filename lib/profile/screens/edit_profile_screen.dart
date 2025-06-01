@@ -143,11 +143,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 FormBuilderTextField(
                   name: 'email',
                   decoration: const InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'Email (Read-only)',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
+                    helperText: 'Email cannot be changed',
                   ),
                   keyboardType: TextInputType.emailAddress,
+                  readOnly: true,
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
                     FormBuilderValidators.email(),
@@ -348,14 +350,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final formData = _formKey.currentState!.value;
       final profileBloc = context.read<ProfileBloc>();
 
-      // Check if email has changed
-      final newEmail = formData['email']?.toString().trim();
-      if (newEmail != null && newEmail != user.email) {
-        // Update email first
-        profileBloc.add(UpdateEmail(newEmail: newEmail));
-      }
-
-      // Update other profile fields
+      // Note: Email updates are not supported by the backend API
+      // Only update profile fields that are supported
       profileBloc.add(
         UpdateProfile(
           firstName:

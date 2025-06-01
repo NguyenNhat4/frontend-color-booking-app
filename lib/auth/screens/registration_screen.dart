@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:mobile/auth/bloc/auth_bloc.dart';
-import 'package:mobile/auth/bloc/auth_event.dart';
 import 'package:mobile/auth/repositories/auth_repository.dart';
 
 class RegistrationScreen extends StatelessWidget {
