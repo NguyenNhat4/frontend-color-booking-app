@@ -76,6 +76,13 @@ class AuthRepository {
         data: {'username_or_email': usernameOrEmail, 'password': password},
       );
       if (response.statusCode == 200 && response.data['access_token'] != null) {
+        // Store the token for future API calls
+        await persistToken(response.data['access_token']);
+        if (response.data['user'] != null &&
+            response.data['user']['username'] != null) {
+          await persistUsername(response.data['user']['username']);
+        }
+
         return {
           'access_token': response.data['access_token'],
           'user': response.data['user'],
@@ -114,6 +121,7 @@ class AuthRepository {
       }
     } catch (e) {
       debugPrint('Registration failed: $e');
+      rethrow; // Re-throw the error so the UI can handle it
     }
     return null;
   }

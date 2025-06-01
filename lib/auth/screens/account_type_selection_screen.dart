@@ -10,39 +10,49 @@ class AccountTypeSelectionScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Select Account Type')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              'What type of account would you like to create?',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            _buildAccountTypeCard(
-              context,
-              title: 'Homeowner',
-              description: 'I want to visualize paint colors for my home',
-              icon: Icons.home,
-              accountType: 'homeowner',
-            ),
-            const SizedBox(height: 16),
-            _buildAccountTypeCard(
-              context,
-              title: 'Professional',
-              description: 'I\'m a painter or interior designer',
-              icon: Icons.business_center,
-              accountType: 'professional',
-            ),
-            const SizedBox(height: 16),
-            _buildAccountTypeCard(
-              context,
-              title: 'Business',
-              description: 'I represent a paint business or supplier',
-              icon: Icons.store,
-              accountType: 'business',
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'What type of account would you like to create?',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              _buildAccountTypeCard(
+                context,
+                title: 'Homeowner',
+                description: 'I want to visualize paint colors for my home',
+                icon: Icons.home,
+                accountType: 'homeowner',
+              ),
+              const SizedBox(height: 16),
+              _buildAccountTypeCard(
+                context,
+                title: 'Professional',
+                description: 'I\'m a painter or interior designer',
+                icon: Icons.business_center,
+                accountType: 'contractor',
+              ),
+              const SizedBox(height: 16),
+              _buildAccountTypeCard(
+                context,
+                title: 'Business',
+                description: 'I represent a paint business or supplier',
+                icon: Icons.store,
+                accountType: 'company',
+              ),
+              const SizedBox(height: 16),
+              _buildAccountTypeCard(
+                context,
+                title: 'Regular Customer',
+                description: 'I\'m an individual consumer',
+                icon: Icons.person,
+                accountType: 'regular_customer',
+              ),
+            ],
+          ),
         ),
       ),
     );
