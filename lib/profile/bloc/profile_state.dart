@@ -54,16 +54,6 @@ class ProfileUpdateSuccess extends ProfileState {
   String toString() => 'ProfileUpdateSuccess { message: $message }';
 }
 
-/// State when password change is successful
-class PasswordChangeSuccess extends ProfileState {
-  final String message;
-
-  const PasswordChangeSuccess({this.message = 'Password changed successfully'});
-
-  @override
-  List<Object> get props => [message];
-}
-
 /// State when account deletion is successful
 class AccountDeleteSuccess extends ProfileState {
   final String message;
