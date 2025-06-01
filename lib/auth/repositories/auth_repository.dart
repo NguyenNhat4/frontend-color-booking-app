@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/config/constants.dart';
 
@@ -60,7 +61,7 @@ class AuthRepository {
         return true;
       }
     } catch (e) {
-      print('Token refresh failed: $e');
+      debugPrint('Token refresh failed: $e');
     }
     return false;
   }
@@ -76,7 +77,7 @@ class AuthRepository {
       }
     } catch (e) {
       // Handle error appropriately
-      print('Login failed: $e');
+      debugPrint('Login failed: $e');
     }
     return null;
   }
@@ -106,7 +107,7 @@ class AuthRepository {
         return response.data;
       }
     } catch (e) {
-      print('Registration failed: $e');
+      debugPrint('Registration failed: $e');
     }
     return null;
   }
@@ -122,7 +123,7 @@ class AuthRepository {
         return response.data;
       }
     } catch (e) {
-      print('Setting account type failed: $e');
+      debugPrint('Setting account type failed: $e');
     }
     return null;
   }
@@ -138,7 +139,7 @@ class AuthRepository {
         return response.data;
       }
     } catch (e) {
-      print('Forgot password failed: $e');
+      debugPrint('Forgot password failed: $e');
     }
     return null;
   }
@@ -160,7 +161,7 @@ class AuthRepository {
       );
       return response.statusCode == 200;
     } catch (e) {
-      print('Password reset failed: $e');
+      debugPrint('Password reset failed: $e');
     }
     return false;
   }
@@ -173,7 +174,7 @@ class AuthRepository {
       );
       return response.statusCode == 200;
     } catch (e) {
-      print('Email verification failed: $e');
+      debugPrint('Email verification failed: $e');
     }
     return false;
   }

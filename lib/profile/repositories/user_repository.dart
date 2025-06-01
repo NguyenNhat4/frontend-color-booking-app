@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/config/constants.dart';
 import 'package:mobile/profile/models/user_model.dart';
@@ -39,7 +40,7 @@ class UserRepository {
         return User.fromJson(response.data);
       }
     } catch (e) {
-      print('Failed to get current user: $e');
+      debugPrint('Failed to get current user: $e');
     }
     return null;
   }
@@ -77,7 +78,7 @@ class UserRepository {
         return User.fromJson(response.data);
       }
     } catch (e) {
-      print('Failed to update user profile: $e');
+      debugPrint('Failed to update user profile: $e');
       rethrow; // Re-throw to handle in UI
     }
     return null;
@@ -89,7 +90,7 @@ class UserRepository {
       final response = await _dio.delete('${ApiConstants.baseUrl}/users/me');
       return response.statusCode == 200;
     } catch (e) {
-      print('Failed to delete account: $e');
+      debugPrint('Failed to delete account: $e');
       rethrow;
     }
   }
