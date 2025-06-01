@@ -8,6 +8,7 @@ import '../bloc/image_processing_event.dart';
 import '../bloc/image_processing_state.dart';
 import '../widgets/image_preview_widget.dart';
 import '../widgets/upload_button_widget.dart';
+import '../widgets/color_palette_widget.dart';
 
 class ImageUploadScreen extends StatelessWidget {
   const ImageUploadScreen({super.key});
@@ -91,6 +92,21 @@ class ImageUploadView extends StatelessWidget {
 
               // Demo images section
               _buildDemoImagesSection(context),
+
+              const SizedBox(height: 24),
+
+              // Color palette section
+              ColorPaletteWidget(
+                onColorSelected: (color, name) {
+                  // TODO: Apply color to selected region
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Đã chọn màu: $name'),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                },
+              ),
 
               const SizedBox(height: 20),
             ],
