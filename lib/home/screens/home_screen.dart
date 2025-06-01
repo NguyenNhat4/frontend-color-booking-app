@@ -6,6 +6,7 @@ import 'package:mobile/profile/bloc/profile_bloc.dart';
 import 'package:mobile/profile/bloc/profile_event.dart';
 import 'package:mobile/profile/repositories/user_repository.dart';
 import 'package:mobile/profile/screens/profile_screen.dart';
+import 'package:mobile/features/image_processing/screens/image_upload_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final String username;
@@ -43,6 +44,31 @@ class HomeScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 32),
+
+            // Color Swap Feature Button
+            ElevatedButton.icon(
+              onPressed: () => _navigateToColorSwap(context),
+              icon: const Icon(Icons.palette),
+              label: const Text('Color Swap'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 20,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
             ElevatedButton.icon(
               onPressed: () => _navigateToProfile(context),
               icon: const Icon(Icons.person),
@@ -76,5 +102,11 @@ class HomeScreen extends StatelessWidget {
             ),
       ),
     );
+  }
+
+  void _navigateToColorSwap(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const ImageUploadScreen()));
   }
 }
