@@ -44,7 +44,7 @@ class _ImageUploadViewState extends State<ImageUploadView> {
   Widget build(BuildContext context) {
     return BlocBuilder<ImageProcessingBloc, ImageProcessingState>(
       builder: (context, state) {
-        return Padding(
+        return SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -87,8 +87,8 @@ class _ImageUploadViewState extends State<ImageUploadView> {
               const SizedBox(height: 32),
 
               // Image preview section
-              Expanded(
-                flex: 3,
+              Container(
+                height: 200, // Fixed height instead of Expanded
                 child: _buildImagePreviewSection(context, state),
               ),
 
