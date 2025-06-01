@@ -55,14 +55,19 @@ class User extends Equatable {
 
   /// Get the user's initials for avatar display
   String get initials {
-    if (firstName != null && lastName != null) {
+    if (firstName != null &&
+        firstName!.isNotEmpty &&
+        lastName != null &&
+        lastName!.isNotEmpty) {
       return '${firstName![0].toUpperCase()}${lastName![0].toUpperCase()}';
-    } else if (firstName != null) {
+    } else if (firstName != null && firstName!.isNotEmpty) {
       return firstName![0].toUpperCase();
-    } else if (lastName != null) {
+    } else if (lastName != null && lastName!.isNotEmpty) {
       return lastName![0].toUpperCase();
+    } else if (username.isNotEmpty) {
+      return username[0].toUpperCase();
     }
-    return username[0].toUpperCase();
+    return '?'; // Fallback for completely empty data
   }
 
   /// Check if user has a business account type

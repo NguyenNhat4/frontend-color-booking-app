@@ -31,7 +31,6 @@ class LoginScreen extends StatelessWidget {
                 ),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
-                  FormBuilderValidators.email(),
                 ]),
               ),
               const SizedBox(height: 16),
@@ -50,14 +49,15 @@ class LoginScreen extends StatelessWidget {
                   if (_formKey.currentState?.saveAndValidate() ?? false) {
                     final formData = _formKey.currentState?.value;
                     if (formData != null) {
-                      final token = await authRepository.login(
+                      final loginResponse = await authRepository.login(
                         formData['username_or_email'],
                         formData['password'],
                       );
-                      if (token != null && context.mounted) {
-                        // Extract username from token or API response if available
-                        // For now, using a placeholder
-                        final username = formData['username_or_email'];
+                      if (loginResponse != null && context.mounted) {
+                        final token = loginResponse['access_token'];
+                        final user = loginResponse['user'];
+                        final username =
+                            user['username'] ?? formData['username_or_email'];
                         context.read<AuthBloc>().add(
                           LoggedIn(token: token, username: username),
                         );

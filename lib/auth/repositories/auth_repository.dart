@@ -66,14 +66,27 @@ class AuthRepository {
     return false;
   }
 
-  Future<String?> login(String usernameOrEmail, String password) async {
+  Future<Map<String, dynamic>?> login(
+    String usernameOrEmail,
+    String password,
+  ) async {
     try {
       final response = await _dio.post(
         '${ApiConstants.baseUrl}/auth/login',
         data: {'username_or_email': usernameOrEmail, 'password': password},
       );
       if (response.statusCode == 200 && response.data['access_token'] != null) {
-        return response.data['access_token'];
+        // Store the token for future API calls
+        await persistToken(response.data['access_token']);
+        if (response.data['user'] != null &&
+            response.data['user']['username'] != null) {
+          await persistUsername(response.data['user']['username']);
+        }
+
+        return {
+          'access_token': response.data['access_token'],
+          'user': response.data['user'],
+        };
       }
     } catch (e) {
       // Handle error appropriately
@@ -108,6 +121,7 @@ class AuthRepository {
       }
     } catch (e) {
       debugPrint('Registration failed: $e');
+      rethrow; // Re-throw the error so the UI can handle it
     }
     return null;
   }
@@ -202,5 +216,53 @@ class AuthRepository {
 
   Future<void> deleteUsername() async {
     await _secureStorage.delete(key: 'username');
+  }
+
+  /// Get current user profile
+  Future<Map<String, dynamic>?> getCurrentUser() async {
+    try {
+      final response = await _dio.get('${ApiConstants.baseUrl}/users/me');
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      debugPrint('Get current user failed: $e');
+    }
+    return null;
+  }
+
+  /// Update current user profile
+  Future<Map<String, dynamic>?> updateProfile({
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? streetAddress,
+    String? city,
+    String? state,
+    String? zipCode,
+    String? country,
+  }) async {
+    try {
+      final data = <String, dynamic>{};
+      if (firstName != null) data['first_name'] = firstName;
+      if (lastName != null) data['last_name'] = lastName;
+      if (phoneNumber != null) data['phone_number'] = phoneNumber;
+      if (streetAddress != null) data['street_address'] = streetAddress;
+      if (city != null) data['city'] = city;
+      if (state != null) data['state'] = state;
+      if (zipCode != null) data['zip_code'] = zipCode;
+      if (country != null) data['country'] = country;
+
+      final response = await _dio.put(
+        '${ApiConstants.baseUrl}/users/me',
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      debugPrint('Update profile failed: $e');
+    }
+    return null;
   }
 }

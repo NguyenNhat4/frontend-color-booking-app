@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:mobile/auth/bloc/auth_bloc.dart';
-import 'package:mobile/auth/bloc/auth_event.dart';
 import 'package:mobile/auth/repositories/auth_repository.dart';
 
 class RegistrationScreen extends StatelessWidget {
@@ -108,48 +105,142 @@ class RegistrationScreen extends StatelessWidget {
                     if (_formKey.currentState?.saveAndValidate() ?? false) {
                       final formData = _formKey.currentState?.value;
                       if (formData != null) {
-                        final result = await authRepository.register(
-                          email: formData['email'],
-                          username: formData['username'],
-                          password: formData['password'],
-                          firstName: formData['first_name'],
-                          lastName: formData['last_name'],
-                          phoneNumber: formData['phone_number'],
-                        );
-                        if (result != null && context.mounted) {
-                          // After successful registration, set account type
-                          final accountTypeResult = await authRepository
-                              .setAccountType(accountType);
-
-                          if (accountTypeResult != null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Registration Successful! Please login.',
-                                ),
-                              ),
-                            );
-                            Navigator.pop(context); // Go back to login screen
-                            Navigator.pop(
-                              context,
-                            ); // Go back to account type selection screen
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Registration successful but failed to set account type. Please try logging in.',
-                                ),
-                              ),
-                            );
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          }
-                        } else if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Registration Failed'),
-                            ),
+                        try {
+                          final result = await authRepository.register(
+                            email: formData['email'],
+                            username: formData['username'],
+                            password: formData['password'],
+                            firstName: formData['first_name'],
+                            lastName: formData['last_name'],
+                            phoneNumber: formData['phone_number'],
                           );
+
+                          if (result != null && context.mounted) {
+                            // Registration successful - now login and set account type
+                            try {
+                              final loginResult = await authRepository.login(
+                                formData['email'],
+                                formData['password'],
+                              );
+
+                              if (loginResult != null &&
+                                  loginResult['access_token'] != null) {
+                                // Now set the account type
+                                final accountTypeResult = await authRepository
+                                    .setAccountType(accountType);
+
+                                if (accountTypeResult != null) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Registration successful! You are now logged in.',
+                                        ),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                    // Navigate to main app or dashboard
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      '/home',
+                                      (route) => false,
+                                    );
+                                  }
+                                } else {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Registration successful but failed to set account type. Please set it in your profile.',
+                                        ),
+                                        backgroundColor: Colors.orange,
+                                      ),
+                                    );
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      '/home',
+                                      (route) => false,
+                                    );
+                                  }
+                                }
+                              } else {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Registration successful! Please login to continue.',
+                                      ),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                  Navigator.pop(
+                                    context,
+                                  ); // Go back to login screen
+                                  Navigator.pop(
+                                    context,
+                                  ); // Go back to account type selection
+                                }
+                              }
+                            } catch (loginError) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Registration successful! Please login to continue.',
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                                Navigator.pop(
+                                  context,
+                                ); // Go back to login screen
+                                Navigator.pop(
+                                  context,
+                                ); // Go back to account type selection
+                              }
+                            }
+                          } else if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Registration failed. Please try again.',
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            String errorMessage =
+                                'Registration failed. Please try again.';
+
+                            // Extract specific error message if available
+                            if (e.toString().contains(
+                              'Email already registered',
+                            )) {
+                              errorMessage =
+                                  'This email is already registered. Please use a different email or try logging in.';
+                            } else if (e.toString().contains(
+                              'Username already exists',
+                            )) {
+                              errorMessage =
+                                  'This username is already taken. Please choose a different username.';
+                            } else if (e.toString().contains('422')) {
+                              errorMessage =
+                                  'Please check your input and try again. Make sure all required fields are filled correctly.';
+                            } else if (e.toString().contains('400')) {
+                              errorMessage =
+                                  'Invalid input. Please check your information and try again.';
+                            }
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(errorMessage),
+                                backgroundColor: Colors.red,
+                                duration: const Duration(seconds: 5),
+                              ),
+                            );
+                          }
                         }
                       }
                     }
