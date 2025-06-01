@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/config/constants.dart';
 import 'package:mobile/profile/models/user_model.dart';
@@ -39,7 +40,7 @@ class UserRepository {
         return User.fromJson(response.data);
       }
     } catch (e) {
-      print('Failed to get current user: $e');
+      debugPrint('Failed to get current user: $e');
     }
     return null;
   }
@@ -77,85 +78,20 @@ class UserRepository {
         return User.fromJson(response.data);
       }
     } catch (e) {
-      print('Failed to update user profile: $e');
+      debugPrint('Failed to update user profile: $e');
       rethrow; // Re-throw to handle in UI
     }
     return null;
   }
 
-  /// Update user email (might require verification)
-  Future<User?> updateEmail(String newEmail) async {
+  /// Delete user account (soft delete - deactivates account)
+  Future<bool> deleteAccount() async {
     try {
-      final response = await _dio.put(
-        '${ApiConstants.baseUrl}/users/me/email',
-        data: {'email': newEmail},
-      );
-
-      if (response.statusCode == 200 && response.data != null) {
-        return User.fromJson(response.data);
-      }
-    } catch (e) {
-      print('Failed to update email: $e');
-      rethrow;
-    }
-    return null;
-  }
-
-  /// Change password
-  Future<bool> changePassword({
-    required String currentPassword,
-    required String newPassword,
-  }) async {
-    try {
-      final response = await _dio.put(
-        '${ApiConstants.baseUrl}/users/me/password',
-        data: {
-          'current_password': currentPassword,
-          'new_password': newPassword,
-        },
-      );
-
+      final response = await _dio.delete('${ApiConstants.baseUrl}/users/me');
       return response.statusCode == 200;
     } catch (e) {
-      print('Failed to change password: $e');
+      debugPrint('Failed to delete account: $e');
       rethrow;
     }
-  }
-
-  /// Delete user account
-  Future<bool> deleteAccount(String password) async {
-    try {
-      final response = await _dio.delete(
-        '${ApiConstants.baseUrl}/users/me',
-        data: {'password': password},
-      );
-
-      return response.statusCode == 200;
-    } catch (e) {
-      print('Failed to delete account: $e');
-      rethrow;
-    }
-  }
-
-  /// Upload profile picture
-  Future<User?> uploadProfilePicture(String imagePath) async {
-    try {
-      FormData formData = FormData.fromMap({
-        'profile_picture': await MultipartFile.fromFile(imagePath),
-      });
-
-      final response = await _dio.post(
-        '${ApiConstants.baseUrl}/users/me/profile-picture',
-        data: formData,
-      );
-
-      if (response.statusCode == 200 && response.data != null) {
-        return User.fromJson(response.data);
-      }
-    } catch (e) {
-      print('Failed to upload profile picture: $e');
-      rethrow;
-    }
-    return null;
   }
 }
