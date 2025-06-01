@@ -25,7 +25,29 @@ class MyApp extends StatelessWidget {
               AuthBloc(authRepository: authRepository)..add(AppStarted()),
       child: MaterialApp(
         title: 'Paint Color Swap',
-        theme: ThemeData(primarySwatch: Colors.blue),
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blue,
+            brightness: Brightness.light,
+          ),
+          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+          cardTheme: CardTheme(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          filledButtonTheme: FilledButtonThemeData(
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ),
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             if (state is AuthInitial || state is AuthLoading) {
