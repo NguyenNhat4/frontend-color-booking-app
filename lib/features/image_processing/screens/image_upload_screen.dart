@@ -9,6 +9,7 @@ import '../bloc/image_processing_state.dart';
 import '../widgets/image_preview_widget.dart';
 import '../widgets/upload_button_widget.dart';
 import '../widgets/color_palette_widget.dart';
+import '../widgets/product_info_widget.dart';
 
 class ImageUploadScreen extends StatelessWidget {
   const ImageUploadScreen({super.key});
@@ -28,8 +29,16 @@ class ImageUploadScreen extends StatelessWidget {
   }
 }
 
-class ImageUploadView extends StatelessWidget {
+class ImageUploadView extends StatefulWidget {
   const ImageUploadView({super.key});
+
+  @override
+  State<ImageUploadView> createState() => _ImageUploadViewState();
+}
+
+class _ImageUploadViewState extends State<ImageUploadView> {
+  Color? selectedColor;
+  String? selectedColorName;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +106,12 @@ class ImageUploadView extends StatelessWidget {
 
               // Color palette section
               ColorPaletteWidget(
+                selectedColor: selectedColor,
                 onColorSelected: (color, name) {
+                  setState(() {
+                    selectedColor = color;
+                    selectedColorName = name;
+                  });
                   // TODO: Apply color to selected region
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -107,6 +121,28 @@ class ImageUploadView extends StatelessWidget {
                   );
                 },
               ),
+
+              // Product info section (show when color is selected)
+              if (selectedColor != null && selectedColorName != null) ...[
+                const SizedBox(height: 24),
+                ProductInfoWidget(
+                  productName: 'Sơn Nội Thất',
+                  productType: 'Sơn trong nhà',
+                  selectedColor: selectedColor!,
+                  colorName: selectedColorName!,
+                  price: 250000, // VND
+                  onAddToCart: (quantity) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Đã thêm $quantity thùng sơn $selectedColorName vào giỏ hàng',
+                        ),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  },
+                ),
+              ],
 
               const SizedBox(height: 20),
             ],
@@ -201,14 +237,14 @@ class ImageUploadView extends StatelessWidget {
             Icon(Icons.image_outlined, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'No Image Selected',
+              'Chưa có ảnh hoặc vùng màu được chọn',
               style: Theme.of(
                 context,
               ).textTheme.headlineSmall?.copyWith(color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
             Text(
-              'Upload a photo to get started',
+              'Tải ảnh lên để bắt đầu',
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
