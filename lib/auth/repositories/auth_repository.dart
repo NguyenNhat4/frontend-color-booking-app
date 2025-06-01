@@ -17,7 +17,7 @@ class AuthRepository {
           }
           return handler.next(options);
         },
-        onError: (DioError error, handler) async {
+        onError: (DioException error, handler) async {
           // If 401, try to refresh token
           if (error.response?.statusCode == 401) {
             // Attempt token refresh logic here
