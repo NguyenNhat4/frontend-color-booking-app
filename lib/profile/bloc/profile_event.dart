@@ -45,48 +45,12 @@ class UpdateProfile extends ProfileEvent {
   ];
 }
 
-/// Event to update user email
-class UpdateEmail extends ProfileEvent {
-  final String newEmail;
-
-  const UpdateEmail({required this.newEmail});
-
-  @override
-  List<Object> get props => [newEmail];
-}
-
-/// Event to change password
-class ChangePassword extends ProfileEvent {
-  final String currentPassword;
-  final String newPassword;
-
-  const ChangePassword({
-    required this.currentPassword,
-    required this.newPassword,
-  });
-
-  @override
-  List<Object> get props => [currentPassword, newPassword];
-}
-
-/// Event to upload profile picture
-class UploadProfilePicture extends ProfileEvent {
-  final String imagePath;
-
-  const UploadProfilePicture({required this.imagePath});
-
-  @override
-  List<Object> get props => [imagePath];
-}
-
-/// Event to delete user account
+/// Event to delete user account (soft delete)
 class DeleteAccount extends ProfileEvent {
-  final String password;
-
-  const DeleteAccount({required this.password});
+  const DeleteAccount();
 
   @override
-  List<Object> get props => [password];
+  List<Object> get props => [];
 }
 
 /// Event to refresh profile data
