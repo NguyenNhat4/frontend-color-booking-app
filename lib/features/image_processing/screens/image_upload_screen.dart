@@ -293,7 +293,7 @@ class _ImageUploadViewState extends State<ImageUploadView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Or try with demo images:',
+          'Hoặc thử với ảnh mẫu:',
           style: Theme.of(
             context,
           ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
