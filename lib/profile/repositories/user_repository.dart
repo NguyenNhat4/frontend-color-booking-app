@@ -83,79 +83,14 @@ class UserRepository {
     return null;
   }
 
-  /// Update user email (might require verification)
-  Future<User?> updateEmail(String newEmail) async {
+  /// Delete user account (soft delete - deactivates account)
+  Future<bool> deleteAccount() async {
     try {
-      final response = await _dio.put(
-        '${ApiConstants.baseUrl}/users/me/email',
-        data: {'email': newEmail},
-      );
-
-      if (response.statusCode == 200 && response.data != null) {
-        return User.fromJson(response.data);
-      }
-    } catch (e) {
-      print('Failed to update email: $e');
-      rethrow;
-    }
-    return null;
-  }
-
-  /// Change password
-  Future<bool> changePassword({
-    required String currentPassword,
-    required String newPassword,
-  }) async {
-    try {
-      final response = await _dio.put(
-        '${ApiConstants.baseUrl}/users/me/password',
-        data: {
-          'current_password': currentPassword,
-          'new_password': newPassword,
-        },
-      );
-
-      return response.statusCode == 200;
-    } catch (e) {
-      print('Failed to change password: $e');
-      rethrow;
-    }
-  }
-
-  /// Delete user account
-  Future<bool> deleteAccount(String password) async {
-    try {
-      final response = await _dio.delete(
-        '${ApiConstants.baseUrl}/users/me',
-        data: {'password': password},
-      );
-
+      final response = await _dio.delete('${ApiConstants.baseUrl}/users/me');
       return response.statusCode == 200;
     } catch (e) {
       print('Failed to delete account: $e');
       rethrow;
     }
-  }
-
-  /// Upload profile picture
-  Future<User?> uploadProfilePicture(String imagePath) async {
-    try {
-      FormData formData = FormData.fromMap({
-        'profile_picture': await MultipartFile.fromFile(imagePath),
-      });
-
-      final response = await _dio.post(
-        '${ApiConstants.baseUrl}/users/me/profile-picture',
-        data: formData,
-      );
-
-      if (response.statusCode == 200 && response.data != null) {
-        return User.fromJson(response.data);
-      }
-    } catch (e) {
-      print('Failed to upload profile picture: $e');
-      rethrow;
-    }
-    return null;
   }
 }

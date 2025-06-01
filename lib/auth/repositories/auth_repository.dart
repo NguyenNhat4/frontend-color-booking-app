@@ -88,7 +88,6 @@ class AuthRepository {
     String? firstName,
     String? lastName,
     String? phoneNumber,
-    required String accountType,
   }) async {
     try {
       final response = await _dio.post(
@@ -97,12 +96,10 @@ class AuthRepository {
           'email': email,
           'username': username,
           'password': password,
-          'confirm_password':
-              password, // Assuming confirm_password is same as password for now
+          'confirm_password': password, // Required field matching password
           'first_name': firstName,
           'last_name': lastName,
           'phone_number': phoneNumber,
-          'account_type': accountType,
         },
       );
       if (response.statusCode == 201) {
@@ -112,6 +109,73 @@ class AuthRepository {
       print('Registration failed: $e');
     }
     return null;
+  }
+
+  /// Set account type after registration (separate endpoint)
+  Future<Map<String, dynamic>?> setAccountType(String accountType) async {
+    try {
+      final response = await _dio.put(
+        '${ApiConstants.baseUrl}/auth/account-type',
+        data: {'account_type': accountType},
+      );
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      print('Setting account type failed: $e');
+    }
+    return null;
+  }
+
+  /// Initiate password reset
+  Future<Map<String, dynamic>?> forgotPassword(String email) async {
+    try {
+      final response = await _dio.post(
+        '${ApiConstants.baseUrl}/auth/forgot-password',
+        data: {'email': email},
+      );
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } catch (e) {
+      print('Forgot password failed: $e');
+    }
+    return null;
+  }
+
+  /// Reset password with token
+  Future<bool> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '${ApiConstants.baseUrl}/auth/reset-password',
+        data: {
+          'token': token,
+          'new_password': newPassword,
+          'confirm_password':
+              newPassword, // Required field matching new_password
+        },
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Password reset failed: $e');
+    }
+    return false;
+  }
+
+  /// Verify email with token
+  Future<bool> verifyEmail(String verificationToken) async {
+    try {
+      final response = await _dio.post(
+        '${ApiConstants.baseUrl}/auth/verify-email/$verificationToken',
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Email verification failed: $e');
+    }
+    return false;
   }
 
   Future<void> persistToken(String token) async {

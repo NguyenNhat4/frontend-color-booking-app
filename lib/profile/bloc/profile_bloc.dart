@@ -11,9 +11,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       super(ProfileInitial()) {
     on<LoadProfile>(_onLoadProfile);
     on<UpdateProfile>(_onUpdateProfile);
-    on<UpdateEmail>(_onUpdateEmail);
-    on<ChangePassword>(_onChangePassword);
-    on<UploadProfilePicture>(_onUploadProfilePicture);
     on<DeleteAccount>(_onDeleteAccount);
     on<RefreshProfile>(_onRefreshProfile);
   }
@@ -83,129 +80,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  /// Handle updating user email
-  Future<void> _onUpdateEmail(
-    UpdateEmail event,
-    Emitter<ProfileState> emit,
-  ) async {
-    final currentState = state;
-    if (currentState is ProfileLoaded) {
-      emit(ProfileUpdating(currentUser: currentState.user));
-
-      try {
-        final updatedUser = await _userRepository.updateEmail(event.newEmail);
-
-        if (updatedUser != null) {
-          emit(
-            ProfileUpdateSuccess(
-              updatedUser: updatedUser,
-              message: 'Email updated successfully',
-            ),
-          );
-          emit(ProfileLoaded(user: updatedUser));
-        } else {
-          emit(
-            ProfileError(
-              message: 'Failed to update email',
-              currentUser: currentState.user,
-            ),
-          );
-          emit(ProfileLoaded(user: currentState.user));
-        }
-      } catch (e) {
-        emit(
-          ProfileError(
-            message: 'Error updating email: ${e.toString()}',
-            currentUser: currentState.user,
-          ),
-        );
-        emit(ProfileLoaded(user: currentState.user));
-      }
-    }
-  }
-
-  /// Handle changing password
-  Future<void> _onChangePassword(
-    ChangePassword event,
-    Emitter<ProfileState> emit,
-  ) async {
-    final currentState = state;
-    if (currentState is ProfileLoaded) {
-      emit(ProfileUpdating(currentUser: currentState.user));
-
-      try {
-        final success = await _userRepository.changePassword(
-          currentPassword: event.currentPassword,
-          newPassword: event.newPassword,
-        );
-
-        if (success) {
-          emit(const PasswordChangeSuccess());
-          emit(ProfileLoaded(user: currentState.user));
-        } else {
-          emit(
-            ProfileError(
-              message: 'Failed to change password',
-              currentUser: currentState.user,
-            ),
-          );
-          emit(ProfileLoaded(user: currentState.user));
-        }
-      } catch (e) {
-        emit(
-          ProfileError(
-            message: 'Error changing password: ${e.toString()}',
-            currentUser: currentState.user,
-          ),
-        );
-        emit(ProfileLoaded(user: currentState.user));
-      }
-    }
-  }
-
-  /// Handle uploading profile picture
-  Future<void> _onUploadProfilePicture(
-    UploadProfilePicture event,
-    Emitter<ProfileState> emit,
-  ) async {
-    final currentState = state;
-    if (currentState is ProfileLoaded) {
-      emit(ProfileUpdating(currentUser: currentState.user));
-
-      try {
-        final updatedUser = await _userRepository.uploadProfilePicture(
-          event.imagePath,
-        );
-
-        if (updatedUser != null) {
-          emit(
-            ProfileUpdateSuccess(
-              updatedUser: updatedUser,
-              message: 'Profile picture updated successfully',
-            ),
-          );
-          emit(ProfileLoaded(user: updatedUser));
-        } else {
-          emit(
-            ProfileError(
-              message: 'Failed to upload profile picture',
-              currentUser: currentState.user,
-            ),
-          );
-          emit(ProfileLoaded(user: currentState.user));
-        }
-      } catch (e) {
-        emit(
-          ProfileError(
-            message: 'Error uploading profile picture: ${e.toString()}',
-            currentUser: currentState.user,
-          ),
-        );
-        emit(ProfileLoaded(user: currentState.user));
-      }
-    }
-  }
-
   /// Handle deleting user account
   Future<void> _onDeleteAccount(
     DeleteAccount event,
@@ -216,7 +90,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(ProfileUpdating(currentUser: currentState.user));
 
       try {
-        final success = await _userRepository.deleteAccount(event.password);
+        final success = await _userRepository.deleteAccount();
 
         if (success) {
           emit(const AccountDeleteSuccess());
