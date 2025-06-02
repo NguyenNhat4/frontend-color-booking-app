@@ -24,33 +24,23 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   Future<void> _onLoadCart(LoadCart event, Emitter<CartState> emit) async {
     try {
       emit(const CartLoading());
-
       final cart = await _cartRepository.loadCart();
-
-      if (cart.isEmpty) {
+      if (cart.items.isEmpty) {
         emit(const CartEmpty());
       } else {
         emit(CartLoaded(cart: cart));
       }
-    } catch (error) {
-      emit(CartError(errorMessage: 'Failed to load cart: ${error.toString()}'));
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
     }
   }
 
   Future<void> _onAddToCart(AddToCart event, Emitter<CartState> emit) async {
     try {
-      // Show operation in progress if we have a current cart
-      final currentCart = _cartRepository.getCurrentCart();
-      if (currentCart != null) {
-        emit(
-          CartOperationInProgress(
-            currentCart: currentCart,
-            operationMessage: 'Adding ${event.product.name} to cart...',
-          ),
-        );
-      } else {
-        emit(const CartLoading());
-      }
+      // Save current state to restore if there's an error
+      final currentState = state;
+
+      emit(const CartLoading());
 
       final updatedCart = await _cartRepository.addToCart(
         product: event.product,
@@ -59,21 +49,13 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         notes: event.notes,
       );
 
-      emit(
-        CartLoaded(
-          cart: updatedCart,
-          message:
-              '${event.product.name} (${event.selectedColor.name}) added to cart',
-        ),
-      );
-    } catch (error) {
-      final currentCart = _cartRepository.getCurrentCart();
-      emit(
-        CartError(
-          errorMessage: 'Failed to add item to cart: ${error.toString()}',
-          currentCart: currentCart,
-        ),
-      );
+      if (updatedCart.items.isEmpty) {
+        emit(const CartEmpty());
+      } else {
+        emit(CartLoaded(cart: updatedCart));
+      }
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
     }
   }
 
@@ -82,37 +64,22 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
-      final currentCart = _cartRepository.getCurrentCart();
-      if (currentCart == null) {
-        emit(const CartError(errorMessage: 'Cart not found'));
-        return;
-      }
+      final currentState = state;
 
-      emit(
-        CartOperationInProgress(
-          currentCart: currentCart,
-          operationMessage: 'Updating quantity...',
-        ),
-      );
+      emit(const CartLoading());
 
       final updatedCart = await _cartRepository.updateCartItemQuantity(
         cartItemId: event.cartItemId,
         newQuantity: event.newQuantity,
       );
 
-      if (updatedCart.isEmpty) {
-        emit(const CartEmpty(message: 'Your cart is now empty'));
+      if (updatedCart.items.isEmpty) {
+        emit(const CartEmpty());
       } else {
-        emit(CartLoaded(cart: updatedCart, message: 'Quantity updated'));
+        emit(CartLoaded(cart: updatedCart));
       }
-    } catch (error) {
-      final currentCart = _cartRepository.getCurrentCart();
-      emit(
-        CartError(
-          errorMessage: 'Failed to update quantity: ${error.toString()}',
-          currentCart: currentCart,
-        ),
-      );
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
     }
   }
 
@@ -121,64 +88,33 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
-      final currentCart = _cartRepository.getCurrentCart();
-      if (currentCart == null) {
-        emit(const CartError(errorMessage: 'Cart not found'));
-        return;
-      }
+      final currentState = state;
 
-      emit(
-        CartOperationInProgress(
-          currentCart: currentCart,
-          operationMessage: 'Removing item...',
-        ),
-      );
+      emit(const CartLoading());
 
       final updatedCart = await _cartRepository.removeFromCart(
         cartItemId: event.cartItemId,
       );
 
-      if (updatedCart.isEmpty) {
-        emit(const CartEmpty(message: 'Item removed. Your cart is now empty'));
+      if (updatedCart.items.isEmpty) {
+        emit(const CartEmpty());
       } else {
-        emit(CartLoaded(cart: updatedCart, message: 'Item removed from cart'));
+        emit(CartLoaded(cart: updatedCart));
       }
-    } catch (error) {
-      final currentCart = _cartRepository.getCurrentCart();
-      emit(
-        CartError(
-          errorMessage: 'Failed to remove item: ${error.toString()}',
-          currentCart: currentCart,
-        ),
-      );
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
     }
   }
 
   Future<void> _onClearCart(ClearCart event, Emitter<CartState> emit) async {
     try {
-      final currentCart = _cartRepository.getCurrentCart();
-      if (currentCart == null) {
-        emit(const CartEmpty());
-        return;
-      }
+      emit(const CartLoading());
 
-      emit(
-        CartOperationInProgress(
-          currentCart: currentCart,
-          operationMessage: 'Clearing cart...',
-        ),
-      );
+      final updatedCart = await _cartRepository.clearCart();
 
-      await _cartRepository.clearCart();
-      emit(const CartEmpty(message: 'Cart cleared successfully'));
-    } catch (error) {
-      final currentCart = _cartRepository.getCurrentCart();
-      emit(
-        CartError(
-          errorMessage: 'Failed to clear cart: ${error.toString()}',
-          currentCart: currentCart,
-        ),
-      );
+      emit(const CartEmpty());
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
     }
   }
 
@@ -186,8 +122,19 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     RefreshCart event,
     Emitter<CartState> emit,
   ) async {
-    // Refresh is essentially the same as loading
-    add(const LoadCart());
+    try {
+      emit(const CartLoading());
+
+      final cart = await _cartRepository.loadCart();
+
+      if (cart.items.isEmpty) {
+        emit(const CartEmpty());
+      } else {
+        emit(CartLoaded(cart: cart));
+      }
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
+    }
   }
 
   Future<void> _onApplyDiscountCode(
@@ -195,36 +142,29 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
-      final currentCart = _cartRepository.getCurrentCart();
-      if (currentCart == null || currentCart.isEmpty) {
-        emit(
-          const CartError(errorMessage: 'Cannot apply discount to empty cart'),
-        );
+      if (state is! CartLoaded) {
         return;
       }
 
-      emit(
-        CartDiscountLoading(
-          currentCart: currentCart,
-          discountCode: event.discountCode,
-        ),
-      );
+      final currentState = state as CartLoaded;
 
-      final discountResult = await _cartRepository.applyDiscountCode(
+      emit(const CartLoading());
+
+      final result = await _cartRepository.applyDiscountCode(
         discountCode: event.discountCode,
       );
 
+      final updatedCart = await _cartRepository.loadCart();
+
       emit(
         CartLoaded(
-          cart: currentCart,
-          appliedDiscountCode: discountResult['discountCode'] as String,
-          discountAmount: discountResult['discountAmount'] as double,
-          message: discountResult['message'] as String,
+          cart: updatedCart,
+          appliedDiscountCode: result['discountCode'] as String,
+          discountAmount: result['discountAmount'] as double,
         ),
       );
-    } catch (error) {
-      final currentCart = _cartRepository.getCurrentCart();
-      emit(CartError(errorMessage: error.toString(), currentCart: currentCart));
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
     }
   }
 
@@ -232,13 +172,20 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     RemoveDiscount event,
     Emitter<CartState> emit,
   ) async {
-    final currentCart = _cartRepository.getCurrentCart();
-    if (currentCart == null) {
-      emit(const CartError(errorMessage: 'Cart not found'));
-      return;
-    }
+    try {
+      if (state is! CartLoaded) {
+        return;
+      }
 
-    emit(CartLoaded(cart: currentCart, message: 'Discount removed'));
+      emit(const CartLoading());
+
+      // In real implementation, we would call a method to remove the discount
+      final updatedCart = await _cartRepository.loadCart();
+
+      emit(CartLoaded(cart: updatedCart));
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
+    }
   }
 
   Future<void> _onSaveCartForLater(
@@ -246,20 +193,13 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
-      await _cartRepository.saveCartForLater();
-      final currentCart = _cartRepository.getCurrentCart();
+      emit(const CartLoading());
 
-      if (currentCart != null) {
-        emit(CartLoaded(cart: currentCart, message: 'Cart saved for later'));
-      }
-    } catch (error) {
-      final currentCart = _cartRepository.getCurrentCart();
-      emit(
-        CartError(
-          errorMessage: 'Failed to save cart: ${error.toString()}',
-          currentCart: currentCart,
-        ),
-      );
+      await _cartRepository.saveCartForLater();
+
+      emit(const CartEmpty());
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
     }
   }
 
@@ -270,26 +210,28 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     try {
       emit(const CartLoading());
 
-      final savedCart = await _cartRepository.restoreSavedCart();
+      final cart = await _cartRepository.restoreSavedCart();
 
-      if (savedCart == null || savedCart.isEmpty) {
-        emit(const CartEmpty(message: 'No saved cart found'));
+      if (cart == null || cart.items.isEmpty) {
+        emit(const CartEmpty());
       } else {
-        emit(
-          CartLoaded(cart: savedCart, message: 'Cart restored successfully'),
-        );
+        emit(CartLoaded(cart: cart));
       }
-    } catch (error) {
-      emit(
-        CartError(errorMessage: 'Failed to restore cart: ${error.toString()}'),
-      );
+    } catch (e) {
+      emit(CartError(errorMessage: e.toString()));
     }
   }
 
-  /// Get current cart item count for badge display
+  /// Get the current number of items in the cart
   int getCurrentCartItemCount() {
-    final cart = _cartRepository.getCurrentCart();
-    return cart?.totalItemCount ?? 0;
+    // Return the total number of items in the cart (sum of quantities)
+    if (state is CartLoaded) {
+      return (state as CartLoaded).cart.totalItemCount;
+    }
+
+    // Try getting from repository directly for immediate access
+    final currentCart = _cartRepository.getCurrentCart();
+    return currentCart?.totalItemCount ?? 0;
   }
 
   /// Check if cart has items

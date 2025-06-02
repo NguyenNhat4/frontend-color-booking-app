@@ -11,6 +11,7 @@ import '../../../../core/theme/paint_app_colors.dart';
 import '../../../../features/shopping_cart/bloc/cart_bloc.dart';
 import '../../../../features/shopping_cart/bloc/cart_event.dart';
 import '../../../../features/shopping_cart/presentation/screens/shopping_cart_screen.dart';
+import '../../../../features/shopping_cart/presentation/widgets/cart_badge_widget.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int productId;
@@ -94,6 +95,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     pinned: true,
                     backgroundColor: Theme.of(context).primaryColor,
                     foregroundColor: Colors.white,
+                    actions: [
+                      // Add cart badge to app bar
+                      const CartBadgeWidget(useInverseColors: true),
+                      const SizedBox(width: 16),
+                    ],
                     flexibleSpace: FlexibleSpaceBar(
                       background: ProductImageCarousel(
                         imageUrls: product.imageUrls,
