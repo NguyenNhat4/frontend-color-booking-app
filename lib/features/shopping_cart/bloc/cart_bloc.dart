@@ -38,8 +38,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   Future<void> _onAddToCart(AddToCart event, Emitter<CartState> emit) async {
     try {
       // Save current state to restore if there's an error
-      final currentState = state;
-
       emit(const CartLoading());
 
       final updatedCart = await _cartRepository.addToCart(
@@ -64,8 +62,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
-      final currentState = state;
-
       emit(const CartLoading());
 
       final updatedCart = await _cartRepository.updateCartItemQuantity(
@@ -88,8 +84,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
-      final currentState = state;
-
       emit(const CartLoading());
 
       final updatedCart = await _cartRepository.removeFromCart(
@@ -164,7 +158,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         ),
       );
     } catch (e) {
-      emit(CartError(errorMessage: e.toString()));
+      if (state is CartLoaded) {
+        final currentState = state as CartLoaded;
+        emit(CartLoaded(cart: currentState.cart));
+      } else {
+        emit(CartError(errorMessage: e.toString()));
+      }
     }
   }
 
