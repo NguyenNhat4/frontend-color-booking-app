@@ -7,6 +7,10 @@ import '../../models/product.dart';
 import '../../models/color.dart';
 import '../widgets/color_palette_widget.dart';
 import '../widgets/product_image_carousel.dart';
+import '../../../../core/theme/paint_app_colors.dart';
+import '../../../../features/shopping_cart/bloc/cart_bloc.dart';
+import '../../../../features/shopping_cart/bloc/cart_event.dart';
+import '../../../../features/shopping_cart/presentation/screens/shopping_cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int productId;
@@ -227,16 +231,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               // Add to Cart Button
               floatingActionButton: FloatingActionButton.extended(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Added ${product.name} to cart'),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
+                  if (selectedColor == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please select a color first'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                    return;
+                  }
+
+                  // Show quantity selector dialog
+                  _showAddToCartDialog(context, product, selectedColor!);
                 },
                 icon: const Icon(Icons.shopping_cart),
                 label: const Text('Add to Cart'),
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: PaintAppColors.primaryBlue,
                 foregroundColor: Colors.white,
               ),
             );
@@ -246,5 +256,185 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         },
       ),
     );
+  }
+
+  // Show dialog to select quantity and add to cart
+  void _showAddToCartDialog(
+    BuildContext context,
+    Product product,
+    ProductColor selectedColor,
+  ) {
+    int quantity = 1;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Add to Cart'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: _parseHexColor(selectedColor.hexCode),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              selectedColor.name,
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('Select Quantity:'),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed:
+                            quantity > 1
+                                ? () {
+                                  setState(() {
+                                    quantity--;
+                                  });
+                                }
+                                : null,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[300]!),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          quantity.toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            quantity++;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _addToCart(context, product, selectedColor, quantity);
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: PaintAppColors.primaryBlue,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Add to Cart'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Add to cart functionality
+  void _addToCart(
+    BuildContext context,
+    Product product,
+    ProductColor selectedColor,
+    int quantity,
+  ) {
+    // Check if we have a CartBloc in the widget tree, otherwise create one
+    CartBloc? cartBloc;
+    try {
+      cartBloc = BlocProvider.of<CartBloc>(context);
+    } catch (_) {
+      // If no CartBloc is found, we create a new one for this operation
+      cartBloc = CartBloc();
+    }
+
+    // Add the product to cart
+    cartBloc.add(
+      AddToCart(
+        product: product,
+        selectedColor: selectedColor,
+        quantity: quantity,
+      ),
+    );
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${product.name} added to cart'),
+        backgroundColor: PaintAppColors.success,
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(
+          label: 'VIEW CART',
+          textColor: Colors.white,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ShoppingCartScreen.withBloc(),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // Helper method to parse hex color
+  Color _parseHexColor(String hexColor) {
+    try {
+      final hex = hexColor.replaceAll('#', '');
+      return Color(int.parse('FF$hex', radix: 16));
+    } catch (e) {
+      return Colors.grey;
+    }
   }
 }
