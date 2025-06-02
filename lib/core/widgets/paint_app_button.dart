@@ -19,7 +19,7 @@ class PaintAppButton extends StatefulWidget {
   final TextStyle? customTextStyle;
 
   const PaintAppButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.variant = PaintAppButtonVariant.primary,
@@ -33,7 +33,7 @@ class PaintAppButton extends StatefulWidget {
     this.customGradient,
     this.customColor,
     this.customTextStyle,
-  }) : super(key: key);
+  });
 
   @override
   State<PaintAppButton> createState() => _PaintAppButtonState();
@@ -290,7 +290,7 @@ class _PaintAppButtonState extends State<PaintAppButton>
       case PaintAppButtonVariant.ghost:
         return _isPressed
             ? Border.all(
-              color: PaintAppColors.primary.withOpacity(0.3),
+              color: PaintAppColors.primary.withValues(alpha: 0.3),
               width: 1.5,
             )
             : null;
@@ -320,7 +320,7 @@ class _PaintAppButtonState extends State<PaintAppButton>
       case PaintAppButtonVariant.success:
         return [
           BoxShadow(
-            color: PaintAppColors.paintGreen.withOpacity(0.3),
+            color: PaintAppColors.paintGreen.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -328,7 +328,7 @@ class _PaintAppButtonState extends State<PaintAppButton>
       case PaintAppButtonVariant.warning:
         return [
           BoxShadow(
-            color: PaintAppColors.paintYellow.withOpacity(0.3),
+            color: PaintAppColors.paintYellow.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -336,7 +336,7 @@ class _PaintAppButtonState extends State<PaintAppButton>
       case PaintAppButtonVariant.error:
         return [
           BoxShadow(
-            color: PaintAppColors.paintRed.withOpacity(0.3),
+            color: PaintAppColors.paintRed.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
