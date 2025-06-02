@@ -104,7 +104,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     try {
       emit(const CartLoading());
 
-      final updatedCart = await _cartRepository.clearCart();
+      await _cartRepository.clearCart();
 
       emit(const CartEmpty());
     } catch (e) {
@@ -140,8 +140,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         return;
       }
 
-      final currentState = state as CartLoaded;
-
       emit(const CartLoading());
 
       final result = await _cartRepository.applyDiscountCode(
@@ -159,8 +157,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       );
     } catch (e) {
       if (state is CartLoaded) {
-        final currentState = state as CartLoaded;
-        emit(CartLoaded(cart: currentState.cart));
+        emit(CartLoaded(cart: (state as CartLoaded).cart));
       } else {
         emit(CartError(errorMessage: e.toString()));
       }
