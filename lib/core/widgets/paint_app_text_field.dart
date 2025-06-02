@@ -33,7 +33,7 @@ class PaintAppTextField extends StatefulWidget {
   final bool showShadow;
 
   const PaintAppTextField({
-    Key? key,
+    super.key,
     required this.label,
     this.hint,
     this.prefixText,
@@ -60,7 +60,7 @@ class PaintAppTextField extends StatefulWidget {
     this.showFocusedBorder = true,
     this.fillColor,
     this.showShadow = true,
-  }) : super(key: key);
+  });
 
   @override
   State<PaintAppTextField> createState() => _PaintAppTextFieldState();

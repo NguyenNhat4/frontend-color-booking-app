@@ -10,6 +10,7 @@ import 'package:mobile/features/image_processing/screens/image_upload_screen.dar
 import 'package:mobile/features/product_catalog/presentation/screens/vietnamese_product_screen.dart';
 import 'package:mobile/core/theme/paint_app_colors.dart';
 import 'package:mobile/core/widgets/paint_app_button.dart';
+import 'package:mobile/features/shopping_cart/presentation/widgets/cart_badge_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final String username;
@@ -30,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<double> _colorAnimation;
 
   // Mock user type - in real app this would come from user data
-  String _userType = 'homeowner'; // contractor, homeowner, company, regular
+  final String _userType = 'homeowner'; // contractor, homeowner, company, regular
 
   @override
   void initState() {
@@ -92,10 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     final isDesktop = screenWidth > 1200;
-    final isTablet = screenWidth > 768 && screenWidth <= 1200;
-    final isMobile = screenWidth <= 768;
 
     return Scaffold(
       body: Container(
@@ -266,6 +264,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       backgroundColor: Colors.transparent,
       elevation: 0,
       actions: [
+        // Shopping cart icon with badge
+        const CartBadgeWidget(useInverseColors: true),
+        const SizedBox(width: 8),
         _buildAppBarAction(Icons.notifications_outlined, 'Notifications', () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Notifications coming soon!')),
@@ -345,8 +346,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               Text(
                                 'Welcome back!',
                                 style: TextStyle(
-                                  color: PaintAppColors.textInverse.withOpacity(
-                                    0.9,
+                                  color: PaintAppColors.textInverse.withValues(
+                                    alpha: 0.9,
                                   ),
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -368,8 +369,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: PaintAppColors.surface.withOpacity(
-                                    0.2,
+                                  color: PaintAppColors.surface.withValues(
+                                    alpha: 0.2,
                                   ),
                                   borderRadius: BorderRadius.circular(12),
                                 ),

@@ -320,10 +320,10 @@ class _LoginScreenState extends State<LoginScreen>
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(bottom: 24),
                   decoration: BoxDecoration(
-                    color: PaintAppColors.error.withOpacity(0.1),
+                    color: PaintAppColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: PaintAppColors.error.withOpacity(0.3),
+                      color: PaintAppColors.error.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -529,15 +529,15 @@ class PaintBrushBackgroundPainter extends CustomPainter {
     // Paint brush strokes with animation
     final brushStrokes = [
       {
-        'color': PaintAppColors.paintTeal.withOpacity(0.1),
+        'color': PaintAppColors.paintTeal.withValues(alpha: 0.1),
         'path': _createBrushStroke(size, 0.1, 0.2, animationValue),
       },
       {
-        'color': PaintAppColors.paintPurple.withOpacity(0.08),
+        'color': PaintAppColors.paintPurple.withValues(alpha: 0.08),
         'path': _createBrushStroke(size, 0.7, 0.6, animationValue * 0.8),
       },
       {
-        'color': PaintAppColors.paintYellow.withOpacity(0.05),
+        'color': PaintAppColors.paintYellow.withValues(alpha: 0.05),
         'path': _createBrushStroke(size, 0.3, 0.8, animationValue * 1.2),
       },
     ];

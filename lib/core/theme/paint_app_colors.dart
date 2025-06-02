@@ -164,20 +164,20 @@ class PaintAppColors {
   static const Color shadowDark = Color(0x1F000000);
 
   /// Colored shadow for primary elements
-  static Color shadowPrimary = primaryBlue.withOpacity(0.15);
+  static Color shadowPrimary = primaryBlue.withValues(alpha: 0.15);
 
   // ======================
   // INTERACTION COLORS
   // ======================
 
   /// Hover state color
-  static Color hover = primaryBlue.withOpacity(0.08);
+  static Color hover = primaryBlue.withValues(alpha: 0.08);
 
   /// Pressed state color
-  static Color pressed = primaryBlue.withOpacity(0.12);
+  static Color pressed = primaryBlue.withValues(alpha: 0.12);
 
   /// Focus state color
-  static Color focus = primaryBlue.withOpacity(0.16);
+  static Color focus = primaryBlue.withValues(alpha: 0.16);
 
   /// Disabled color
   static const Color disabled = Color(0xFFE5E7EB);
@@ -191,7 +191,7 @@ class PaintAppColors {
 
   /// Get color with opacity
   static Color withOpacity(Color color, double opacity) {
-    return color.withOpacity(opacity);
+    return color.withValues(alpha: opacity);
   }
 
   /// Get darker shade of a color

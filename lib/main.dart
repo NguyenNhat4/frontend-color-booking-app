@@ -6,6 +6,7 @@ import 'package:mobile/auth/bloc/auth_state.dart';
 import 'package:mobile/auth/repositories/auth_repository.dart';
 import 'package:mobile/auth/screens/login_screen.dart';
 import 'package:mobile/home/screens/home_screen.dart';
+import 'package:mobile/features/shopping_cart/bloc/cart_bloc.dart';
 
 void main() {
   final authRepository = AuthRepository();
@@ -19,10 +20,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create:
-          (context) =>
-              AuthBloc(authRepository: authRepository)..add(AppStarted()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create:
+              (context) =>
+                  AuthBloc(authRepository: authRepository)..add(AppStarted()),
+        ),
+        BlocProvider(create: (context) => CartBloc()),
+      ],
       child: MaterialApp(
         title: 'Paint Color Swap',
         theme: ThemeData(
