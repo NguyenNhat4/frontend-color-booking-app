@@ -25,7 +25,7 @@ class CartItemWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withAlpha(20),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -68,7 +68,7 @@ class CartItemWidget extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withAlpha(204), // ~0.8 opacity
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Center(child: CircularProgressIndicator()),
@@ -88,7 +88,9 @@ class CartItemWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
           colors: [
-            _parseHexColor(cartItem.selectedColor.hexCode).withOpacity(0.8),
+            _parseHexColor(
+              cartItem.selectedColor.hexCode,
+            ).withAlpha(204), // ~0.8 opacity
             _parseHexColor(cartItem.selectedColor.hexCode),
           ],
           begin: Alignment.topLeft,
@@ -98,7 +100,7 @@ class CartItemWidget extends StatelessWidget {
           BoxShadow(
             color: _parseHexColor(
               cartItem.selectedColor.hexCode,
-            ).withOpacity(0.3),
+            ).withAlpha(76), // ~0.3 opacity
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -135,7 +137,7 @@ class CartItemWidget extends StatelessWidget {
                 border: Border.all(color: Colors.white, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withAlpha(51), // ~0.2 opacity
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),

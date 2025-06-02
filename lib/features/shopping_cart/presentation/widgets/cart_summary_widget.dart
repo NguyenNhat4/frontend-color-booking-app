@@ -33,7 +33,7 @@ class CartSummaryWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withAlpha(20), // ~0.08 opacity
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -153,9 +153,11 @@ class CartSummaryWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: PaintAppColors.success.withOpacity(0.1),
+        color: PaintAppColors.success.withAlpha(25), // ~0.1 opacity
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: PaintAppColors.success.withOpacity(0.3)),
+        border: Border.all(
+          color: PaintAppColors.success.withAlpha(76),
+        ), // ~0.3 opacity
       ),
       child: Row(
         children: [

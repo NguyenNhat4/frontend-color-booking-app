@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import '../models/cart_item.dart';
 import '../../product_catalog/models/product.dart';
 import '../../product_catalog/models/color.dart';
 
