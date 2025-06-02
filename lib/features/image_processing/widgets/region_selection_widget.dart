@@ -262,7 +262,7 @@ class RegionPainter extends CustomPainter {
 
     final paint =
         Paint()
-          ..color = Colors.blue.withOpacity(0.3)
+          ..color = Colors.blue.withValues(alpha: 0.3)
           ..style = PaintingStyle.fill;
 
     final strokePaint =

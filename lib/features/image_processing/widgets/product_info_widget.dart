@@ -34,7 +34,7 @@ class _ProductInfoWidgetState extends State<ProductInfoWidget> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -202,7 +202,7 @@ class _ProductInfoWidgetState extends State<ProductInfoWidget> {
   Color _getContrastColor(Color color) {
     // Calculate luminance to determine if we should use black or white text
     final luminance =
-        (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
+        (0.299 * color.r + 0.587 * color.g + 0.114 * color.b) / 255;
     return luminance > 0.5 ? Colors.black : Colors.white;
   }
 
