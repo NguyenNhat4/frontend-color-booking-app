@@ -10,6 +10,7 @@ import 'package:mobile/features/image_processing/screens/image_upload_screen.dar
 import 'package:mobile/features/product_catalog/presentation/screens/vietnamese_product_screen.dart';
 import 'package:mobile/core/theme/paint_app_colors.dart';
 import 'package:mobile/core/widgets/paint_app_button.dart';
+import 'package:mobile/features/shopping_cart/presentation/screens/shopping_cart_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String username;
@@ -266,6 +267,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       backgroundColor: Colors.transparent,
       elevation: 0,
       actions: [
+        // Shopping cart icon with badge
+        _buildCartAction(),
+        const SizedBox(width: 8),
         _buildAppBarAction(Icons.notifications_outlined, 'Notifications', () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Notifications coming soon!')),
@@ -1553,6 +1557,68 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       MaterialPageRoute(
         builder: (context) => VietnameseProductScreen.withBloc(),
       ),
+    );
+  }
+
+  // Shopping cart icon with badge
+  Widget _buildCartAction() {
+    // This is a placeholder for the actual cart badge count that would come from the CartBloc
+    final int cartItemCount = 0; // In real implementation, get from CartBloc
+
+    return GestureDetector(
+      onTap: () => _navigateToCart(context),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: PaintAppColors.surface.withAlpha(51), // ~0.2 opacity
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(
+              Icons.shopping_cart_outlined,
+              color: PaintAppColors.textInverse,
+              size: 20,
+            ),
+            if (cartItemCount > 0)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: PaintAppColors.paintRed,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 14,
+                    minHeight: 14,
+                  ),
+                  child: Center(
+                    child: Text(
+                      cartItemCount.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Navigation to shopping cart
+  void _navigateToCart(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ShoppingCartScreen.withBloc()),
     );
   }
 
