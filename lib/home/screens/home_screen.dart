@@ -8,6 +8,7 @@ import 'package:mobile/profile/repositories/user_repository.dart';
 import 'package:mobile/profile/screens/profile_screen.dart';
 import 'package:mobile/features/image_processing/screens/image_upload_screen.dart';
 import 'package:mobile/features/product_catalog/presentation/screens/vietnamese_product_screen.dart';
+import 'package:mobile/features/order_management/presentation/screens/order_history_screen.dart';
 import 'package:mobile/core/theme/paint_app_colors.dart';
 import 'package:mobile/core/widgets/paint_app_button.dart';
 import 'package:mobile/features/shopping_cart/presentation/widgets/cart_badge_widget.dart';
@@ -31,7 +32,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<double> _colorAnimation;
 
   // Mock user type - in real app this would come from user data
-  final String _userType = 'homeowner'; // contractor, homeowner, company, regular
+  final String _userType =
+      'homeowner'; // contractor, homeowner, company, regular
 
   @override
   void initState() {
@@ -1557,6 +1559,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  void _navigateToOrderHistory(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const OrderHistoryScreen()),
+    );
+  }
+
   // Data methods
   List<Map<String, dynamic>> _getFeaturedColors() {
     return [
@@ -1634,6 +1643,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ],
         ),
         'onTap': () => _navigateToProfile(context),
+      },
+      {
+        'title': 'Order History',
+        'subtitle': 'View your past orders & track deliveries',
+        'icon': Icons.history,
+        'color': PaintAppColors.primaryBlue,
+        'gradient': LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            PaintAppColors.primaryBlue,
+            PaintAppColors.lighten(PaintAppColors.primaryBlue, 0.1),
+          ],
+        ),
+        'onTap': () => _navigateToOrderHistory(context),
       },
       {
         'title': 'Color Trends',
