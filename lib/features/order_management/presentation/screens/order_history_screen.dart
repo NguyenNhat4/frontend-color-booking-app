@@ -5,6 +5,7 @@ import '../../bloc/order_event.dart';
 import '../../bloc/order_state.dart';
 import '../../models/order.dart';
 import '../../models/order_status.dart';
+import 'order_detail_screen.dart';
 
 class OrderHistoryScreen extends StatelessWidget {
   const OrderHistoryScreen({super.key});
@@ -168,9 +169,10 @@ class _OrderHistoryView extends StatelessWidget {
   }
 
   void _navigateToOrderDetail(BuildContext context, String orderId) {
-    // TODO: Navigate to order detail screen when implemented
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Order #$orderId details - Coming soon!')),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => OrderDetailScreen(orderId: orderId),
+      ),
     );
   }
 }
